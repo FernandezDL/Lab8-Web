@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import Card from './components/Card'
+import Finalizado from './components/Finalizado'
 import './index.css'
 
 import angelica from "fotos/Angelica.png";
@@ -28,6 +29,8 @@ function App(){
     const[opcionUno, setOpcionUno]= useState(null)
     const[opcionDos, setOpcionDos]= useState(null)
     const[disabled, setDisabled]= useState(null)
+    const[finalizado, setFinalizado]= useState(false)
+    const[contador, setContador]= useState(0)
 
     const mezclar =() => {
         const cartasMezclar= [...cardImages, ...cardImages]
@@ -38,6 +41,7 @@ function App(){
         setMovimientos(0)
         setOpcionDos(null)
         setOpcionUno(null)
+        setContador(0)
     }  
 
     const handleChoice = (card) => {
@@ -66,6 +70,8 @@ function App(){
                 })
 
                 reiniciarMovs()
+                setContador((prev) => prev + 1)
+                console.log(contador)
             }
 
             else{
@@ -73,7 +79,20 @@ function App(){
                 setTimeout(() => reiniciarMovs(), 1300)
             }
         }
-    }, [opcionUno, opcionDos])
+
+        const finished = cards.every((card) => card.matched === true);
+        
+        if(finished)
+        {
+            setFinalizado(true);
+
+            console.log('finalizado')
+        }
+        else
+        {
+            setFinalizado(false);
+        }
+    }, [opcionUno, opcionDos, cards])
 
     /*console.log(cards)*/
 
@@ -89,30 +108,37 @@ function App(){
     }, [])
 
     return (
-        <div>
-            <h1>Hamil - memory</h1>
-            
-            <p>Movimientos: {movimientos}</p>
-            <div className="container">
-                {cards.map(card => (
-                    <Card 
-                        key={card.id} 
-                        card={card}
-                        handleChoice={handleChoice}
-                        flipped={
-                            card === opcionUno || 
-                            card === opcionDos || 
-                            card.matched
-                        }
-                        disabled={disabled}
-                    /> 
-                ))}
-            </div>
+       /* <>
+            {finalizado && <Finalizado/>}
+*/
+            <div>
+                <h1>Hamil - memory</h1>
+                
+                <p>Movimientos: {movimientos}</p>
 
-            <div className="bttnContainer">
-                <button on onClick={mezclar}>Reiniciar</button>
-            </div>
-        </div>      
+                {finalizado && <h2>¡Completaste el juego!</h2>}
+            
+                <div className="container">
+                    {cards.map(card => (
+                        <Card 
+                            key={card.id} 
+                            card={card}
+                            handleChoice={handleChoice}
+                            flipped={
+                                card === opcionUno || 
+                                card === opcionDos || 
+                                card.matched
+                            }
+                            disabled={disabled}
+                        /> 
+                    ))}
+                </div>
+
+                <div className="bttnContainer">
+                    <button on onClick={mezclar}>Reiniciar</button>
+                </div>
+            </div>   
+       // </>   
     );
 }
 
